@@ -1,9 +1,11 @@
 package com.ezen.boot_JPA.controller;
 
 import com.ezen.boot_JPA.dto.BoardDTO;
+import com.ezen.boot_JPA.dto.PagingVO;
 import com.ezen.boot_JPA.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,10 +36,34 @@ public class BoardController {
         return "/index";
     }
 
-    @GetMapping("/list")
+    /*@GetMapping("/list")
     public void list(Model model){
+        // paging이 없는 케이스
         List<BoardDTO> list = boardService.getList();
         model.addAttribute("list", list);
+    }*/
+
+    @GetMapping("/list")
+    public void list(Model model, @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
+        // 화면에서 들어오는 pageNo = 1 / 0으로 처리가 되어야 함
+        // 화면에서 들어오는 pageNo = 2 / 1로 처리가 되어야 함
+        log.info(">>> pageNo >>> {}", pageNo);
+        pageNo = (pageNo == 0 ? 0 : pageNo - 1);
+        log.info(">>> pageNo >>> {}", pageNo);
+        Page<BoardDTO> list = boardService.getList(pageNo);
+
+        log.info(">>> list >>> {}", list.toString());
+        log.info(">>> totalCount >>> {}", list.getTotalElements()); // 전체 글 수
+        log.info(">>> totalPage >>> {}", list.getTotalPages()); // 전체 페이지 수 => realEndPage
+        log.info(">>> pageNumber >>> {}", list.getNumber()); // 전체 페이지 번호 => pageNo
+        log.info(">>> pageSize >>> {}", list.getSize()); // 한 페이지에 표시되는 길이 => qty
+        log.info(">>> next >>> {}", list.hasNext()); // next 여부
+        log.info(">>> prev >>> {}", list.hasPrevious()); // prev 여부
+
+        PagingVO pgvo = new PagingVO(list, pageNo);
+        log.info(">>> pgvo >>> {}", pgvo.toString());
+        model.addAttribute("list", list);
+        model.addAttribute("pgvo", pgvo);
     }
 
     @GetMapping("/detail")

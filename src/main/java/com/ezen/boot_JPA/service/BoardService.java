@@ -2,6 +2,7 @@ package com.ezen.boot_JPA.service;
 
 import com.ezen.boot_JPA.dto.BoardDTO;
 import com.ezen.boot_JPA.entity.Board;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -36,11 +37,14 @@ public interface BoardService {
                 .build();
     }
 
-    List<BoardDTO> getList();
+//  List<BoardDTO> getList();
+
+    Page<BoardDTO> getList(int pageNo);
 
     BoardDTO getDetail(Long bno);
 
     Long modify(BoardDTO boardDTO);
 
     void delete(Long bno);
+
 }
