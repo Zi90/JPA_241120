@@ -6,9 +6,9 @@
 
 <div layout:fragment="content">
     <div class="container-md">
-        <h1>Board Detail Page [[boardDTO.bno]]</h1>
+        <h1>Board Detail Page [[${boardFileDTO.boardDTO.bno}]]</h1>
 
-        <form action="/board/modify" method="post" id="modForm">
+        <form action="/board/modify" method="post" enctype="multipart/form-data" id="modForm" th:with="boardDTO=${boardFileDTO.boardDTO}">
             <div class="mb-3">
                 <label for="r" class="form-label">Created At</label>
                 <input type="text" class="form-control" name="regDate" id="r" th:value="${boardDTO.regAt}" readonly>
@@ -26,8 +26,43 @@
             </div>
             <div class="mb-3">
                 <label for="content" class="form-label">Content</label>
-                <textarea class="form-control" name="content" id="content" rows="3" readonly>[[${boardDTO.content}]]</textarea>
+                <textarea class="form-control" name="content" id="content" rows="3" readonly>[[${boardFileDTO.boardDTO.content}]]</textarea>
             </div>
+            <!-- 파일 출력라인 -->
+            <div class="mb-3">
+                <ul class="list-group">
+                    <li th:each="fvo:${boardFileDTO.fileDTOList}" class="list-group-item">
+                        <div th:if="${fvo.fileType > 0}" class="ms-2 me-auto">
+                            <img th:src="@{|/upload/${fvo.saveDir}/${fvo.uuid}_${fvo.fileName}|}" alt="img" />
+                        </div>
+                        <div th:unless="${fvo.fileType > 0}" class="ms-2 me-auto">
+                            <!-- 일반 파일은 다운로드 가능 -->
+                            <a th:href="@{|/upload/${fvo.saveDir}/${fvo.uuid}_${fvo.fileName}|}" th:download="${fvo.fileName}">
+                                <!-- 파일 모양 아이콘 -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                    <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">[[${fvo.fileName}]]</div>
+                            [[${fvo.regAt}]]
+                        </div>
+                        <span class="badge text-bg-success rounded-pill">[[${fvo.fileSize}]]Bytes</span>
+                        <button type="button" th:data-uuid="${fvo.uuid}" class="btn btn-outline-danger bnt-nm file-x" disabled>x</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- file 추가 라인 -->
+            <div class="mb-3">
+                <input type="file" class="form-control" name="files" id="file" multiple style="display:none;">
+            </div>
+            <button type="button" id="trigger" class="btn btn-primary" disabled>File Upload</button> <br>
+
+            <!-- 파일 수정 등록 라인 -->
+            <div class="input-group mb-3" id="fileZone"></div>
+
             <button type="button" id="listBtn" class="btn btn-primary">List</button>
             <button type="button" id="modBtn" class="btn btn-warning">Modify</button>
             <a th:href="@{/board/delete(bno=${boardDTO.bno})}">
@@ -76,13 +111,14 @@
         </div>
 
         <script th:inline="javascript">
-            let bnoVal = [[${boardDTO.bno}]]
+            let bnoVal = [[${boardFileDTO.boardDTO.bno}]]
             console.log(bnoVal);
         </script>
 
     </div>
     <script th:src="@{/js/boardDetail.js}"></script>
     <script th:src="@{/js/boardComment.js}"></script>
+    <script th:src="@{/js/boardRegister.js}"></script>
 
     <script>
         spreadCommentList(bnoVal);
