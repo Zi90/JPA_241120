@@ -70,7 +70,7 @@ public interface BoardService {
 
 //  List<BoardDTO> getList();
 
-    Page<BoardDTO> getList(int pageNo);
+    Page<BoardDTO> getList(int pageNo, String type, String keyword);
 
 //    BoardDTO getDetail(Long bno);
 

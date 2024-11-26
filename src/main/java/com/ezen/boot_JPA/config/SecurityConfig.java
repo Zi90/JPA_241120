@@ -32,8 +32,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize)->authorize
                         .requestMatchers("/js/**", "/dist/**", "/upload/**", "/",
-                                "/index", "/user/join", "user/login", "board/list",
-                                "board/detail/**", "comment/list/**").permitAll()
+                                "/index", "/user/join", "/user/login", "/board/list",
+                                "/board/detail/**", "/comment/list/**").permitAll()
                         .requestMatchers("/user/list").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )

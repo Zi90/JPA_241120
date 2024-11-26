@@ -7,6 +7,31 @@
 <div layout:fragment="content">
     <div class="container-md">
         <h1>Board List Page</h1>
+        <!-- search line -->
+        <!--[[${pgvo}]]-->
+        <div class="container-fluid">
+            <form action="/board/list" method="get" class="d-flex" role="search">
+                <select class="form-select" name="type" id="inputGroupSelect01">
+                    <option th:selected="${pgvo.type == null ? 'true' : 'false' }">Choose...</option>
+                    <option th:value="t" th:selected="${pgvo.type == 't' ? 'true' : 'false' }">title</option>
+                    <option th:value="w" th:selected="${pgvo.type == 'w' ? 'true' : 'false' }">writer</option>
+                    <option th:value="c" th:selected="${pgvo.type == 'c' ? 'true' : 'false' }">content</option>
+                    <option th:value="tw" th:selected="${pgvo.type == 'tw' ? 'true' : 'false' }">title + writer</option>
+                    <option th:value="wc" th:selected="${pgvo.type == 'wc' ? 'true' : 'false' }">writer + content</option>
+                    <option th:value="tc" th:selected="${pgvo.type == 'tc' ? 'true' : 'false' }">content + title</option>
+                    <option th:value="twc" th:selected="${pgvo.type == 'twc' ? 'true' : 'false' }">all</option>
+                </select>
+                <input class="form-control me-2" name="keyword" type="text" placeholder="Search" th:value="${pgvo.keyword}" aria-label="Search">
+                <input type="hidden" name="pageNo" th:value="1">
+<!--                <input type="hidden" name="qty" th:value="${pgvo.qty }">-->
+                <button type="submit" class="btn btn-primary position-relative">
+                    search
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        [[${list.totalElements}]]
+		            </span>
+                </button>
+            </form>
+        </div>
         <table class="table table-hover">
             <thead>
             <tr>
@@ -32,19 +57,19 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <li th:if="${pgvo.hasPrev}" class="page-item">
-                    <a class="page-link" th:href="@{/board/list(pageNo = ${pgvo.startPage - 1})}" aria-label="Previous">
+                    <a class="page-link" th:href="@{/board/list(pageNo = ${pgvo.startPage - 1}, type=${pgvo.type}, keyword=${pgvo.keyword})}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
 
                 <th:block th:each="i : ${#numbers.sequence(pgvo.startPage, pgvo.endPage)}">
                     <li class="page-item" aria-current="page" th:classappend="${pgvo.pageNo eq i ? 'active' : ''}">
-                        <a class="page-link" th:href="@{/board/list(pageNo = ${i})}">[[${i}]]</a>
+                        <a class="page-link" th:href="@{/board/list(pageNo = ${i}, type=${pgvo.type}, keyword=${pgvo.keyword})}">[[${i}]]</a>
                     </li>
                 </th:block>
 
                 <li th:if="${pgvo.hasNext}" class="page-item">
-                    <a class="page-link" th:href="@{/board/list(pageNo = ${pgvo.endPage + 1})}" aria-label="Next">
+                    <a class="page-link" th:href="@{/board/list(pageNo = ${pgvo.endPage + 1}, type=${pgvo.type}, keyword=${pgvo.keyword})}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
